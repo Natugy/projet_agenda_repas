@@ -27,6 +27,8 @@ app.get('/test',(request,response) =>{
 app.get('/connexion',(request,response)=> {
   response.render('pages/connexion',{test: "c drole haha"});
 });
-
+app.get('/inscription',(request,response)=> {
+  response.render('pages/inscription',);
+});
 
 module.exports =app;
