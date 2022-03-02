@@ -2,6 +2,12 @@ const express = require('express');
 
 const app = express();
 
+app.post('/connexion', (req,res)=> {
+  console.log(req.body);
+  res.redirect('/')
+})
+
+
 //Render
 app.set('view engine', 'ejs');
 
@@ -15,7 +21,12 @@ app.get('/about',(request,response) =>{
 
 });
 app.get('/test',(request,response) =>{
-    response.render('pages/test', {test: "c drole haha"});
+  response.render('pages/test', {test: "c drole haha"});
   
   });
+app.get('/connexion',(request,response)=> {
+  response.render('pages/connexion',{test: "c drole haha"});
+});
+
+
 module.exports =app;
