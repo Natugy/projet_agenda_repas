@@ -5,11 +5,11 @@
     </head>
     <body>
         <%- include('../partials/header') %>
-        <div class="container">
+        <div class="container needs-validation">
             <h3>Connexion</h3>
             <form action="" method="post">
-                <input class="form-control" type="text" name="user" placeholder="Nom d'utilisateur">
-                <input class="form-control" type="text" name="mdp" placeholder="Mot de Passe">
+                <input class="form-control" type="text" name="username" placeholder="Nom d'utilisateur" required>
+                <input class="form-control" type="text" name="password" placeholder="Mot de Passe" required>
                 <button class="btn btn-primary" type="submit">Envoyer</button>
             </form>
         </div> 
