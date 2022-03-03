@@ -3,7 +3,8 @@ const mysql=require('mysql')
 const app = express();
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const cookieParser = require("cookie-parser");
+const cookieParser = require('cookie-parser');
+const flash = require('express-flash');
 
 
 const connection = mysql.createConnection({
@@ -15,6 +16,7 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
+app.use(flash());
 app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({extended:false}));
@@ -26,7 +28,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false }
-}))
+}));
 
 app.post('/connexion', (request,response)=> {
   // Capture the input fields
@@ -57,7 +59,42 @@ app.post('/connexion', (request,response)=> {
 		response.send('Please enter Username and Password!');
 		response.end();
 	}
-})
+});
+
+app.post('/inscription', (request,response) => {
+  let username = request.body.Username;
+	let password = request.body.Password;
+  let mail = request.body.Mail;
+	let confirmPassword = request.body.ConfirmPassword;
+
+  if(password == confirmPassword) {
+    connection.query('SELECT * FROM user WHERE mail = ?', [mail], function(error, results, fields) {
+      if (error) throw error;
+      if(results.length>0) {
+        console.log('mail ou pseudo deja utiliser')
+				response.redirect('/redirect')
+        response.end();
+      }
+      else {
+        connection.query('INSERT INTO user SET username = ?, mail = ?, password = ? ',[username, mail, password], function(error, results, fields) {
+    if (error) throw error;
+    request.session.loggedin = true;
+		request.session.username = username;
+    response.redirect('/');
+    response.end();
+  });
+      }
+    });
+  
+
+
+  }
+  else {
+    console.log('mauvais jack');
+    response.redirect('/inscription');
+    response.end();
+  }
+});
 
 
 //Render
@@ -74,21 +111,31 @@ app.get('/',(request,response) =>{
 });
 
 app.get('/about',(request,response) =>{
-  request.session.test = "test";
+  request.flash('info', 'Welcome');
+  
   response.render('pages/about', {test: "c drole haha"});
   
 });
+
 app.get('/test',(request,response) =>{
+  
   response.render('pages/test', {test: "c drole haha"});
   
   });
-  app.get('/logout',(req,res) => {
-    req.session.destroy();
-    res.redirect('/');
+
+app.get('/logout',(req,res) => {
+  req.session.destroy();
+  res.redirect('/');
 });
+
 app.get('/connexion',(request,response)=> {
   response.render('pages/connexion',{test: "c drole haha"});
 });
+
+app.get('/redirect',(request,response)=> {
+  response.redirect('/inscription');
+});
+
 app.get('/inscription',(request,response)=> {
   response.render('pages/inscription',);
 });
