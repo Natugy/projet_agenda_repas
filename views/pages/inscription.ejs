@@ -5,7 +5,7 @@
         <%- include('../partials/head') %> 
     </head>
     <body>
-        <%- include('../partials/header') %>
+        <%- include('../partials/header', {loggedin : log }) %>
         <div class="container body-content">
             <form action="" method="post">
                 <div class="container">
@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-12 col-lg-6" style="padding-top:10px;">
                             <label>Mail</label>
-                            <input class="form-control" type="mail" name="Mail" required></input>
+                            <input class="form-control" type="email" name="Mail" aria-describedby="emailHelp" required></input>
                         </div>
                     </div>    
         

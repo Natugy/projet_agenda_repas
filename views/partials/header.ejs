@@ -1,21 +1,24 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">CalenDiner</a>
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/about">About</a>
-      </li>
-      
-      <li class="nav-item">
-        <a class="nav-link" href="/connexion">Connexion</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/inscription">Inscription</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/logout">Deco</a>
-      </li>
-    </ul>
-  </nav>
+  <a class="navbar-brand" href="/">CalenDiner</a>
+  <ul class="navbar-nav mr-auto">
+    <li class="nav-item" id="Home">
+      <a class="nav-link" href="/">Home</a>
+    </li>
+    <li class="nav-item" id="About">
+      <a class="nav-link" href="/about">About</a>
+    </li>
+    <% if (loggedin=== undefined) { %> 
+    <li class="nav-item" id="Connexion">
+      <a class="nav-link" href="/connexion">Connexion</a>
+    </li>
+    <li class="nav-item" id="Inscription">
+      <a class="nav-link" href="/inscription">Inscription</a>
+    </li>
+    <% } %> 
+    <% if (loggedin) { %> 
+    <li class="nav-item" id="logout">
+      <a class="nav-link" href="/logout">Deco</a>
+    </li>
+    <% } %> 
+  </ul>
+</nav>

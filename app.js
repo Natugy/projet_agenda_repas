@@ -1,20 +1,15 @@
+//initialisation modules
+
 const express = require('express');
-const mysql=require('mysql')
+
 const app = express();
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const flash = require('express-flash');
 
+const connection = require('./config/database.js');
 
-const connection = mysql.createConnection({
-	host     : 'localhost',
-	user     : 'root',
-	password : 'root',
-	database : 'dbagenda'
-});
-
-connection.connect();
 
 app.use(flash());
 app.use(cookieParser());
@@ -22,7 +17,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
- // trust first proxy
+ // session
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -30,6 +25,7 @@ app.use(session({
   cookie: { secure: false }
 }));
 
+//route post
 app.post('/connexion', (request,response)=> {
   // Capture the input fields
 	let username = request.body.username;
@@ -68,7 +64,7 @@ app.post('/inscription', (request,response) => {
 	let confirmPassword = request.body.ConfirmPassword;
 
   if(password == confirmPassword) {
-    connection.query('SELECT * FROM user WHERE mail = ?', [mail], function(error, results, fields) {
+    connection.query('SELECT * FROM user WHERE mail = ? OR username = ?', [mail,username], function(error, results, fields) {
       if (error) throw error;
       if(results.length>0) {
         console.log('mail ou pseudo deja utiliser')
@@ -77,12 +73,12 @@ app.post('/inscription', (request,response) => {
       }
       else {
         connection.query('INSERT INTO user SET username = ?, mail = ?, password = ? ',[username, mail, password], function(error, results, fields) {
-    if (error) throw error;
-    request.session.loggedin = true;
-		request.session.username = username;
-    response.redirect('/');
-    response.end();
-  });
+          if (error) throw error;
+          request.session.loggedin = true;
+          request.session.username = username;
+          response.redirect('/');
+          response.end();
+         });
       }
     });
   
@@ -91,35 +87,35 @@ app.post('/inscription', (request,response) => {
   }
   else {
     console.log('mauvais jack');
-    response.redirect('/inscription');
+    response.redirect('/redirect');
     response.end();
   }
 });
 
 
-//Render
+//Route GET
 app.set('view engine', 'ejs');
 
 app.get('/',(request,response) =>{
   console.log(request.session)
   if(request.session.loggedin){
-    response.render('pages/index', {test : "Connecté"});
+    response.render('pages/index', {log : request.session.loggedin});
   }
   else {
-    response.render('pages/index', {test : "Non connecter"});
+    response.render('pages/index', {log : request.session.loggedin});
   }
 });
 
 app.get('/about',(request,response) =>{
   request.flash('info', 'Welcome');
   
-  response.render('pages/about', {test: "c drole haha"});
+  response.render('pages/about', {log: request.session.loggedin});
   
 });
 
 app.get('/test',(request,response) =>{
   
-  response.render('pages/test', {test: "c drole haha"});
+  response.render('pages/test', {log: request.session.loggedin});
   
   });
 
@@ -129,7 +125,7 @@ app.get('/logout',(req,res) => {
 });
 
 app.get('/connexion',(request,response)=> {
-  response.render('pages/connexion',{test: "c drole haha"});
+  response.render('pages/connexion',{log: request.session.loggedin});
 });
 
 app.get('/redirect',(request,response)=> {
@@ -137,7 +133,7 @@ app.get('/redirect',(request,response)=> {
 });
 
 app.get('/inscription',(request,response)=> {
-  response.render('pages/inscription',);
+  response.render('pages/inscription',{log: request.session.loggedin});
 });
 
 module.exports =app;
